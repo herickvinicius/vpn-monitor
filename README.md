@@ -33,7 +33,7 @@ Make sure you have the following installed:
 1. **Clone this repository**
 
    ```bash
-   git clone https://github.com/<your-username>/vpn-monitor.git
+   git clone https://github.com/herickvinicius/vpn-monitor.git
    cd vpn-monitor
    ```
 
