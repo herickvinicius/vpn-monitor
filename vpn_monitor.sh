@@ -25,43 +25,43 @@ echo ""
 LAST_TS=$(date +"%Y-%m-%d %H:%M:%S")
 
 while true; do
-    TS=$(date +"%Y-%m-%d %H:%M:%S")
+	TS=$(date +"%Y-%m-%d %H:%M:%S")
 
-    # -----------------------
-    # Ping to gateway
-    # -----------------------
-    if ping -c 1 -W 1 $VPN_GW &>/dev/null; then
-        PING_GW="${GREEN}OK${RESET}"
-    else
-        PING_GW="${RED}FAIL${RESET}"
-    fi
+	# -----------------------
+	# Ping to gateway
+	# -----------------------
+	if ping -c 1 -W 1 $VPN_GW &>/dev/null; then
+		PING_GW="${GREEN}OK${RESET}"
+	else
+		PING_GW="${RED}FAIL${RESET}"
+	fi
 
-    # -----------------------
-    # Internal DNS
-    # -----------------------
-    DNS_INT_OK=true
-    for d in "${DOMAINS_INTERNAL[@]}"; do
-        dig @"$DNS_INTERNAL" "$d" +time=2 +tries=1 &>/dev/null || DNS_INT_OK=false
-    done
-    DNS_INTERNAL_RES=$([ "$DNS_INT_OK" = true ] && echo -e "${GREEN}OK${RESET}" || echo -e "${RED}FAIL${RESET}")
+	# -----------------------
+	# Test internal DNS
+	# -----------------------
+	DNS_INT_OK=true
+	for d in "${DOMAINS_INTERNAL[@]}"; do
+		dig @"$DNS_INTERNAL" "$d" +time=2 +tries=1 &>/dev/null || DNS_INT_OK=false
+	done
+	DNS_INTERNAL_RES=$([ "$DNS_INT_OK" = true ] && echo -e "${GREEN}OK${RESET}" || echo -e "${RED}FAIL${RESET}")
 
-    # -----------------------
-    # External DNS
-    # -----------------------
-    DNS_EXT_OK=true
-    for d in "${DOMAINS_EXTERNAL[@]}"; do
-        dig @"$DNS_EXTERNAL" "$d" +time=2 +tries=1 &>/dev/null || DNS_EXT_OK=false
-    done
-    DNS_EXTERNAL_RES=$([ "$DNS_EXT_OK" = true ] && echo -e "${GREEN}OK${RESET}" || echo -e "${RED}FAIL${RESET}")
+	# -----------------------
+	# Test external DNS
+	# -----------------------
+	DNS_EXT_OK=true
+	for d in "${DOMAINS_EXTERNAL[@]}"; do
+	dig @"$DNS_EXTERNAL" "$d" +time=2 +tries=1 &>/dev/null || DNS_EXT_OK=false
+	done
+	DNS_EXTERNAL_RES=$([ "$DNS_EXT_OK" = true ] && echo -e "${GREEN}OK${RESET}" || echo -e "${RED}FAIL${RESET}")
 
-    # -----------------------
-    # TCP Database
-    # -----------------------
-    if nc -vz $DB_HOST $DB_PORT &>/dev/null; then
-        DB_CONN="${GREEN}OK${RESET}"
-    else
-        DB_CONN="${RED}FAIL${RESET}"
-    fi
+	# -----------------------
+	# Test TCP connection to Database
+	# -----------------------
+	if nc -vz $DB_HOST $DB_PORT &>/dev/null; then
+		DB_CONN="${GREEN}OK${RESET}"
+	else
+		DB_CONN="${RED}FAIL${RESET}"
+	fi
 
 	# -----------------------
 	# Tunel reset via journalctl
@@ -85,19 +85,18 @@ while true; do
 	fi
 
 
-    # -----------------------
-    # Show results
-    # -----------------------
-    clear
-    echo -e "${GREEN}==== Monitoramento VPN TCP ====${RESET}"
-    echo -e "Horário: $TS\n"
-    echo -e "Ping Gateway ($VPN_GW): $PING_GW"
-    echo -e "DNS Interno ($DNS_INTERNAL): $DNS_INTERNAL_RES"
-    echo -e "DNS Externo ($DNS_EXTERNAL): $DNS_EXTERNAL_RES"
-    echo -e "Conexão TCP Banco ($DB_NAME): $DB_CONN"
-    echo -e "Reinício do túnel detectado: $RESTART_DETECTED\n"
-    echo "Atualizando novamente em $INTERVAL segundos..."
+	# -----------------------
+	# Show results
+	# -----------------------
+	clear
+	echo -e "${GREEN}==== Monitoramento VPN TCP ====${RESET}"
+	echo -e "Horário: $TS\n"
+	echo -e "Ping Gateway ($VPN_GW): $PING_GW"
+	echo -e "DNS Interno ($DNS_INTERNAL): $DNS_INTERNAL_RES"
+	echo -e "DNS Externo ($DNS_EXTERNAL): $DNS_EXTERNAL_RES"
+	echo -e "Conexão TCP Banco ($DB_NAME): $DB_CONN"
+	echo -e "Reinício do túnel detectado: $RESTART_DETECTED\n"
+	echo "Atualizando novamente em $INTERVAL segundos..."
 
-    sleep $INTERVAL
+	sleep $INTERVAL
 done
-
